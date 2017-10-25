@@ -3,7 +3,6 @@ package io.github.sojant.tictactoe;
 import io.github.sojant.tictactoe.logic.HardGameLogic;
 import io.github.sojant.tictactoe.model.Point;
 import io.github.sojant.tictactoe.util.StringBoardParser;
-import io.github.sojant.tictactoe.view.BoardView;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -197,7 +196,7 @@ public class HardGameLogicTest {
     }
 
     @Test
-    public void testCenterMove(){
+    public void testNextCenterMove(){
 
         String [][]boardState;
         Point p;
@@ -210,11 +209,58 @@ public class HardGameLogicTest {
                 "|XXX|";
 
         boardState = StringBoardParser.parseString(state);
-        p = gameLogic.checkForCenterMove("X", boardState);
+        p = gameLogic.checkForNextCenterMove("X", boardState);
         Assert.assertNotNull(p);
 
         Assert.assertTrue(p.row==1 && p.col ==1);
 
     }
+
+    @Test
+    public void testNextOppositeCorner(){
+
+        String [][]boardState;
+        Point p;
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "|O  |"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextOppositeCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col ==2);
+
+        state =
+                "|  O|"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextOppositeCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col ==0);
+
+        state =
+                "|   |"+
+                "|   |"+
+                "|  O|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextOppositeCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==0 && p.col ==0);
+
+
+        state =
+                "|   |"+
+                "|   |"+
+                "|O  |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextOppositeCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==0 && p.col ==2);
+
+    }
 }
+
 

@@ -62,9 +62,15 @@ public class HardGameLogic implements GameLogic{
             return nextMove;
         }
 
-        nextMove = checkForCenterMove(mark,boardState);
+        nextMove = checkForNextCenterMove(mark,boardState);
         if (nextMove!=null){
             LOG.info("HardGameLogic chose CENTER");
+            return nextMove;
+        }
+
+        nextMove = checkForNextOppositeCorner(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose OPPOSITE CORNER");
             return nextMove;
         }
 
@@ -77,7 +83,24 @@ public class HardGameLogic implements GameLogic{
 
     }
 
-    public  Point checkForCenterMove(String mark, String[][] boardState) {
+    public Point checkForNextOppositeCorner(String mark, String[][] boardState) {
+
+        String oppositeCornerState =
+                "|A  |"+
+                "|   |"+
+                "|  T|";
+
+        BoardConditionState condition = new BoardConditionState();
+        condition.setAdversaryCount(1);
+        condition.setTargetPointAvailable(1);
+
+        Point nextMove = checkForkStateAndRotate(mark,boardState,oppositeCornerState,condition);
+        if(nextMove!=null) return nextMove;
+
+        return null;
+    }
+
+    public  Point checkForNextCenterMove(String mark, String[][] boardState) {
 
         if(" ".equals(boardState[1][1])){
             return new Point(1,1);
@@ -135,12 +158,12 @@ public class HardGameLogic implements GameLogic{
 
     public Point checkForNextForkMove(String mark, String[][] boardState) {
 
-        //"T" stands for the target point to make the last Fork Move
-        //"E" stands for an explicit empty space
-        //"M" stands for a mark of the current player
-        //" " stands for 'ignore whatever is on this spot'
-
         Point nextMove = null;
+
+        BoardConditionState condition = new BoardConditionState();
+        condition.setTargetPointAvailable(1);
+        condition.setMarkCount(2);
+        condition.setWinMoveCount(2);
 
         String triangularForkState1 =
                 "|T E|"+
@@ -157,13 +180,13 @@ public class HardGameLogic implements GameLogic{
                 "|EM |"+
                 "|T E|";
 
-        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState1);
+        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState1,condition);
         if(nextMove!=null) return nextMove;
 
-        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState2);
+        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState2,condition);
         if(nextMove!=null) return nextMove;
 
-        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState3);
+        nextMove = checkForkStateAndRotate(mark,boardState,triangularForkState3,condition);
         if(nextMove!=null) return nextMove;
 
         String arrowHeadForkState1 =
@@ -171,7 +194,7 @@ public class HardGameLogic implements GameLogic{
                 "|M  |"+
                 "|E  |";
 
-        nextMove = checkForkStateAndRotate(mark,boardState,arrowHeadForkState1);
+        nextMove = checkForkStateAndRotate(mark,boardState,arrowHeadForkState1,condition);
         if(nextMove!=null) return nextMove;
 
 
@@ -190,13 +213,13 @@ public class HardGameLogic implements GameLogic{
                 "|EE |"+
                 "|T  |";
 
-        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState1);
+        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState1,condition);
         if(nextMove!=null) return nextMove;
 
-        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState2);
+        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState2,condition);
         if(nextMove!=null) return nextMove;
 
-        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState3);
+        nextMove = checkForkStateAndRotate(mark,boardState,encirclementForkState3,condition);
         if(nextMove!=null) return nextMove;
 
 
@@ -204,19 +227,28 @@ public class HardGameLogic implements GameLogic{
 
     }
 
-    private Point checkForkStateAndRotate(String mark, String[][] boardState, String state) {
+    private Point checkForkStateAndRotateOnlyForks(String mark, String[][] boardState, String state) {
+
+        //"T" stands for the target point to make the last Fork Move
+        //"E" stands for an explicit empty space
+        //"M" stands for a mark of the current player
+        //" " stands for 'ignore whatever is on this spot'
+        //"A" stands for a mark of the adversary player
+
         String[][] triangularForkState = StringBoardParser.parseString(state);
 
         int winMoveCount;
         int markCount;
-        boolean targetPointAvailable;
+        int adversaryCount;
+        int targetPointAvailable;
         Point targetPoint;
 
         for (int rotations = 1; rotations <= 4; rotations++) {
 
             winMoveCount=0;
             markCount=0;
-            targetPointAvailable=false;
+            adversaryCount=0;
+            targetPointAvailable=0;
             targetPoint=null;
 
             for (int row = 0; row < 3; row++) {
@@ -231,21 +263,92 @@ public class HardGameLogic implements GameLogic{
                         if(mark.equals(boardState[row][col])){
                             markCount++;
                         }
+                    }else if("A".equals(triangularForkState[row][col])){
+                        if(getOponentMark(mark).equals(boardState[row][col])){
+                            adversaryCount++;
+                        }
                     }
                     else if("T".equals(triangularForkState[row][col])){
                         if(" ".equals(boardState[row][col])){
-                            targetPointAvailable = true;
+                            targetPointAvailable ++;
                             targetPoint = new Point(row,col);
                         }
                     }
                 }
             }
 
-            if(targetPointAvailable && markCount == 2 && winMoveCount>=2 ){
+            if(targetPointAvailable==1 && markCount == 2 && winMoveCount>=2 ){
                 //LOG.info("checkForNextForkMove at Rotation "+rotations);
                 //StringBoardParser.printBoard(boardState);
                 return targetPoint;
             }
+            triangularForkState = BoardRotation.rotateCW(triangularForkState);
+        }
+
+        return null;
+    }
+
+    private Point checkForkStateAndRotate(String mark, String[][] boardState, String state, BoardConditionState conditions) {
+
+        //"T" stands for the target point to make the last Fork Move
+        //"E" stands for an explicit empty space
+        //"M" stands for a mark of the current player
+        //" " stands for 'ignore whatever is on this spot'
+        //"A" stands for a mark of the adversary player
+
+        String[][] triangularForkState = StringBoardParser.parseString(state);
+
+        int winMoveCount;
+        int markCount;
+        int adversaryCount;
+        int targetPointAvailable;
+        Point targetPoint;
+
+        for (int rotations = 1; rotations <= 4; rotations++) {
+
+            winMoveCount=0;
+            markCount=0;
+            adversaryCount=0;
+            targetPointAvailable=0;
+            targetPoint=null;
+
+            for (int row = 0; row < 3; row++) {
+                for (int col = 0; col < 3; col++) {
+                    if(" ".equals(triangularForkState[row][col])) continue;
+                    else if("E".equals(triangularForkState[row][col])) {
+                        if(" ".equals(boardState[row][col])){
+                            winMoveCount++;
+                        }
+                    }
+                    else if("M".equals(triangularForkState[row][col])){
+                        if(mark.equals(boardState[row][col])){
+                            markCount++;
+                        }
+                    }else if("A".equals(triangularForkState[row][col])){
+                        if(getOponentMark(mark).equals(boardState[row][col])){
+                            adversaryCount++;
+                        }
+                    }
+                    else if("T".equals(triangularForkState[row][col])){
+                        if(" ".equals(boardState[row][col])){
+                            targetPointAvailable ++;
+                            targetPoint = new Point(row,col);
+                        }
+                    }
+                }
+            }
+
+
+            if(
+                    (conditions.getTargetPointAvailable() == null || targetPointAvailable>=conditions.getTargetPointAvailable()) &&
+                    (conditions.getMarkCount() == null || markCount>=conditions.getMarkCount()) &&
+                    (conditions.getWinMoveCount() == null || winMoveCount>=conditions.getWinMoveCount()) &&
+                    (conditions.getAdversaryCount() == null || adversaryCount>=conditions.getAdversaryCount())
+                    )
+            {
+                return targetPoint;
+            }
+
             triangularForkState = BoardRotation.rotateCW(triangularForkState);
         }
 
