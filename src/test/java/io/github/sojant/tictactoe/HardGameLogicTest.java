@@ -7,6 +7,9 @@ import io.github.sojant.tictactoe.view.BoardView;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Sojant on 2017-10-24.
  */
@@ -14,7 +17,7 @@ public class HardGameLogicTest {
 
 
 
-    @org.junit.Test
+    @Test
     //** Validates that the Next is a Winner state, also the retorning Point, must match with the empty Space found.
     public void testNextWinMove(){
 
@@ -46,6 +49,29 @@ public class HardGameLogicTest {
         p = gameLogic.checkForNextWinMove("O",boardState);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.row==0 && p.col==2);
+
+
+        //Check for Diagonal X Win
+
+        state = "|X  |"+
+                "| X |"+
+                "|   |";
+
+        boardState = StringBoardParser.parseString(state);
+
+        p = gameLogic.checkForNextWinMove("X",boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col==2);
+
+        state = "|  X|"+
+                "| X |"+
+                "|   |";
+
+        boardState = StringBoardParser.parseString(state);
+
+        p = gameLogic.checkForNextWinMove("X",boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col==0);
 
     }
 
@@ -124,5 +150,50 @@ public class HardGameLogicTest {
 
     }
 
+    @Test
+    public void testNextPreWinMove(){
+
+        String [][]boardState;
+
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "|  X|"+
+                "|   |"+
+                "|   |";
+
+        boardState = StringBoardParser.parseString(state);
+        Map<String, List<Point>> mapPoints = gameLogic.checkForNextPreWinMove("X", boardState);
+
+        for (String key: mapPoints.keySet()){
+            List<Point> points = mapPoints.get(key);
+            System.out.println(key+" "+points.get(0)+" "+points.get(1));
+        }
+
+        Assert.assertNotNull(mapPoints);
+        Assert.assertTrue(mapPoints.keySet().size()==3);
+
+
+    }
+
+    @Test
+    public void testNextForkBlock(){
+
+        String [][]boardState;
+        Point p;
+
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "| O |"+
+                "| X |"+
+                "|XOO|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkBlock("O", boardState);
+        System.out.println(p);
+        Assert.assertNotNull(p);
+
+
+    }
 }
 

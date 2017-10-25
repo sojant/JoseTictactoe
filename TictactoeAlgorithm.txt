@@ -1,0 +1,42 @@
+http://onlinelibrary.wiley.com/doi/10.1207/s15516709cog1704_3/epdf
+
+Kevin Crowley, Robert S. Siegler (1993). "Flexible Strategy Use in Young Children’s Tic-Tac-Toe". Cognitive Science. 17 (4): 531–561. doi:10.1016/0364-0213(93)90003-Q
+536 CROWLEY AND SIEGLER TABLE 1 Model of Expert Performance 
+
+Win 
+If there is o row, column, or diagonal with two of my pieces and o blank space,
+Then ploy the blank space (thus wlnnlng the gome). 
+
+Block 
+If there Is a row, column, or diagonal with two of my opponent’s pieces and a blank space,
+Then play the blank space (thus blocking a potential win for my opponent). 
+
+Fork 
+If there are two intersecting rows, columns, or diagonals with one of my pieces and two blonks, and 
+If the intersecting space Is empty,
+Then move to the intersecting space (thus creating two woys to win on my next turn). 
+
+Block Fork 
+If there are two intersecting rows, columns, or diagonals with one of my opponent’s pieces ond two blanks, and 
+If the intersecting space is empty,
+Then 
+    If there is an empty location that creates a two-in-o-row for me (thus forcing my opponent to block rather than fork),
+    Then move to the location.  (as long as it doesn't result in them creating a fork)
+    Else move to the Intersection space (thus occupying the location that my opponent could use to fork).
+
+Play Center 
+If the center is blank,
+Then play the center. 
+
+Play Opposite Corner 
+If my opponent is in a corner, and 
+If the opposite corner is empty,
+Then play the opposite corner. 
+
+Play Empty Corner 
+If there Is an empty corner,
+Then move to an empty corner. 
+
+Play Empty Side 
+If there Is an empty side,
+The player plays in a middle square on any of the 4 sides.

@@ -7,6 +7,11 @@ import io.github.sojant.tictactoe.view.BoardView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Sojant on 2017-10-24.
  */
@@ -46,12 +51,70 @@ public class HardGameLogic implements GameLogic{
         }
 
         nextMove = checkForNextForkMove(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose FORK");
+            return nextMove;
+        }
+
+        nextMove = checkForNextForkBlock(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose FORK BLOCK");
+            return nextMove;
+        }
 
         nextMove = easyGameLogic.makeNextMove(board);
         LOG.info("HardGameLogic defaulted to next open space");
 
+
         return nextMove;
 
+    }
+
+    public Point checkForNextForkBlock(String mark, String[][] boardState) {
+
+        Point point = checkForNextForkMove(getOponentMark(mark), boardState);
+
+        if(point!=null){
+
+            Map<String, List<Point>> preWinMap = checkForNextPreWinMove(mark, boardState);
+
+            if(preWinMap!=null){
+
+                for(String key : preWinMap.keySet()){
+                    List<Point> possiblePreWinMoves = preWinMap.get(key);
+                    for(Point p : possiblePreWinMoves){
+
+                        // Simulates the next move, to verify there won't be an opponent Fork
+                        BoardView futureBoard = new BoardView();
+                        futureBoard.setBoardState(boardState);
+                        futureBoard.makeMove(mark,p);
+
+                        Point opponentPossibleFork = checkForNextForkMove(getOponentMark(mark), futureBoard.getBoardState());
+                        if(opponentPossibleFork==null){
+                            LOG.info("HardGameLogic chose FORK BLOCK - PREWIN MOVE");
+                            return p;
+                        }else{
+                            LOG.info("HardGameLogic discarded "+opponentPossibleFork+" It would make opponent Fork.");
+                            LOG.info("FutureBoard:");
+                            StringBoardParser.printBoard(futureBoard);
+                        }
+
+                    }
+                }
+
+                // Iterar la Lista y Tirar en el pimer lugar que cree una oportunidad de ganar.
+                // Verificar que la jugada seleccionada no le permita Fork al oponente.
+            }
+
+            // If there is no move to be on a PreWin State, place in Opponent's fork point
+            LOG.info("HardGameLogic chose FORK BLOCK - TAKE FORK");
+            return point;
+
+
+        }
+
+
+        return null;
     }
 
     public Point checkForNextForkMove(String mark, String[][] boardState) {
@@ -140,9 +203,6 @@ public class HardGameLogic implements GameLogic{
             targetPointAvailable=false;
             targetPoint=null;
 
-//            StringBoardParser.printBoard(triangularForkState);
-//            System.out.println("-----");
-
             for (int row = 0; row < 3; row++) {
                 for (int col = 0; col < 3; col++) {
                     if(" ".equals(triangularForkState[row][col])) continue;
@@ -170,38 +230,8 @@ public class HardGameLogic implements GameLogic{
                 //StringBoardParser.printBoard(boardState);
                 return targetPoint;
             }
-
             triangularForkState = BoardRotation.rotateCW(triangularForkState);
-
         }
-
-//        for (int row = 0; row < 3; row++) {
-//            for (int col = 0; col < 3; col++) {
-//                if(" ".equals(triangularForkState[row][col])) continue;
-//                else if("E".equals(triangularForkState[row][col])) {
-//                    if(" ".equals(boardState[row][col])){
-//                        winMoveCount++;
-//                    }
-//                }
-//                else if("M".equals(triangularForkState[row][col])){
-//                    if(mark.equals(boardState[row][col])){
-//                        markCount++;
-//                    }
-//                }
-//                else if("T".equals(triangularForkState[row][col])){
-//                    if(" ".equals(boardState[row][col])){
-//                        targetPointAvailable = true;
-//                        targetPoint = new Point(row,col);
-//                    }
-//                }
-//            }
-//        }
-
-//        if(targetPointAvailable && markCount == 2 && winMoveCount>=2 ){
-//            return targetPoint;
-//        }else{
-//            return null;
-//        }
 
         return null;
     }
@@ -227,7 +257,6 @@ public class HardGameLogic implements GameLogic{
             if(emptyPoints==1 && markPoints==2){
                 return p;
             }
-
         }
 
         // Search por possible Win Condition in All Rows
@@ -247,8 +276,137 @@ public class HardGameLogic implements GameLogic{
             }
         }
 
+        // Search por possible Win Condition in Diagonal
+        int emptyPoints=0;
+        int markPoints=0;
+        for (int i = 0; i <3; i++) {
+
+            if(" ".equals(boardState[i][i])){
+                emptyPoints++;
+                p = new Point(i,i);
+            }
+            else if(mark.equals(boardState[i][i])) markPoints++;
+        }
+        if(emptyPoints==1 && markPoints==2){
+            return p;
+        }
+
+
+        // Search por possible Win Condition in Inverted Diagonal
+        emptyPoints=0;
+        markPoints=0;
+
+        for (int i = 0; i <3; i++) {
+
+            if(" ".equals(boardState[i][2-i])){
+                emptyPoints++;
+                p = new Point(i,2-i);
+            }
+            else if(mark.equals(boardState[i][2-i])) markPoints++;
+        }
+        if(emptyPoints==1 && markPoints==2){
+            return p;
+        }
+
+
         return null;
     }
+
+    public Map<String,List<Point>> checkForNextPreWinMove(String mark, String[][] boardState) {
+
+        mark=mark.toUpperCase();
+        Map<String,List<Point>> mapPlays = new HashMap<String, List<Point>>();
+        List<Point> posiblePlays;
+        Point p = null;
+
+        // Search por possible Win Condition in All Columns
+
+        for (int col = 0; col < 3; col++) {
+
+            posiblePlays = new ArrayList<Point>();
+            int emptyPoints=0;
+            int markPoints=0;
+            for (int row = 0; row < 3; row++) {
+                if(" ".equals(boardState[row][col])){
+                    emptyPoints++;
+                    p = new Point(row,col);
+                    posiblePlays.add(p);
+                }
+                else if(mark.equals(boardState[row][col])) markPoints++;
+            }
+            if(emptyPoints==2 && markPoints==1){
+                //return posiblePlays;
+                mapPlays.put("COL"+col,posiblePlays);
+
+            }
+        }
+
+        // Search por possible Win Condition in All Rows
+
+        for (int col = 0; col < 3; col++) {
+
+            posiblePlays = new ArrayList<Point>();
+            int emptyPoints=0;
+            int markPoints=0;
+            for (int row = 0; row < 3; row++) {
+                if(" ".equals(boardState[col][row])){
+                    emptyPoints++;
+                    p = new Point(col,row);
+                    posiblePlays.add(p);
+                }
+                else if(mark.equals(boardState[col][row])) markPoints++;
+            }
+            if(emptyPoints==2 && markPoints==1){
+                //return posiblePlays;
+                mapPlays.put("ROW"+col,posiblePlays);
+            }
+        }
+
+        // Search por possible Win Condition in Diagonal
+        posiblePlays = new ArrayList<Point>();
+        int emptyPoints=0;
+        int markPoints=0;
+        for (int i = 0; i <3; i++) {
+
+            if(" ".equals(boardState[i][i])){
+                emptyPoints++;
+                p = new Point(i,i);
+                posiblePlays.add(p);
+            }
+            else if(mark.equals(boardState[i][i])) markPoints++;
+        }
+        if(emptyPoints==2 && markPoints==1){
+            //return posiblePlays;
+            mapPlays.put("DIAG\\",posiblePlays);
+        }
+
+
+        // Search por possible Win Condition in Inverted Diagonal
+        posiblePlays = new ArrayList<Point>();
+        emptyPoints=0;
+        markPoints=0;
+
+        for (int i = 0; i <3; i++) {
+
+            if(" ".equals(boardState[i][2-i])){
+                emptyPoints++;
+                p = new Point(i,2-i);
+                posiblePlays.add(p);
+            }
+            else if(mark.equals(boardState[i][2-i])) markPoints++;
+        }
+        if(emptyPoints==2 && markPoints==1){
+            //return posiblePlays;
+            mapPlays.put("DIAG/",posiblePlays);
+        }
+
+        if(mapPlays.keySet().size()>0)
+            return mapPlays;
+        else
+            return null;
+
+    }
+
 
     public String getOponentMark(String playerMark){
         playerMark = playerMark.toUpperCase();
