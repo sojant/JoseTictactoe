@@ -2,6 +2,7 @@ package io.github.sojant.tictactoe;
 
 import io.github.sojant.tictactoe.logic.HardGameLogic;
 import io.github.sojant.tictactoe.model.Point;
+import io.github.sojant.tictactoe.util.StringBoardParser;
 import io.github.sojant.tictactoe.view.BoardView;
 import org.junit.Assert;
 
@@ -14,25 +15,32 @@ public class HardGameLogicTest {
     //** Validates that the Next is a Winner state, also the retorning Point, must match with the empty Space found.
     public void testNextWinMove(){
 
-        BoardView board = new BoardView();
-        String [][]boardState = board.getBoardState();
-        Point p = null;
+        String [][]boardState;
+        Point p;
 
         HardGameLogic gameLogic = new HardGameLogic("X");
 
-        boardState[0][0]="X";
-        boardState[1][0]=" ";
-        boardState[2][0]="X";
+        //Check for Col X Win
+
+        String state =
+                "|X  |"+
+                "|   |"+
+                "|X  |";
+        boardState = StringBoardParser.parseString(state);
 
         p = gameLogic.checkForNextWinMove("X",boardState);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.row==1 && p.col==0);
 
-        board.initializeEmptyBoard();
+        //Check for Row O Win
 
-        boardState[0][0]="X";boardState[0][1]="X";boardState[0][2]=" ";
+        state = "|OO |"+
+                "|   |"+
+                "|   |";
 
-        p = gameLogic.checkForNextWinMove("X",boardState);
+        boardState = StringBoardParser.parseString(state);
+
+        p = gameLogic.checkForNextWinMove("O",boardState);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.row==0 && p.col==2);
 

@@ -20,13 +20,12 @@ public class StringBoardParserTest {
 
         String[][] boardState = StringBoardParser.parseString(state);
 
-        BoardView board = new BoardView();
-        board.setBoardState(boardState);
-        board.printBoardOnScreen();
+       StringBoardParser.printBoard(boardState);
 
         Assert.assertTrue("X".equals(boardState[0][0]));
         Assert.assertTrue("O".equals(boardState[1][1]));
         Assert.assertTrue("X".equals(boardState[2][0]));
+        Assert.assertTrue(" ".equals(boardState[0][2]));
 
     }
 

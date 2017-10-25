@@ -1,5 +1,7 @@
 package io.github.sojant.tictactoe.util;
 
+import io.github.sojant.tictactoe.view.BoardView;
+
 import java.util.StringTokenizer;
 
 /**
@@ -30,5 +32,16 @@ public class StringBoardParser {
 
         return boardState;
     }
+
+    public static void printBoard(String[][]boardState){
+        BoardView board = new BoardView();
+        board.setBoardState(boardState);
+        board.printBoardOnScreen();
+    }
+
+    public static void printBoard(BoardView board){
+        printBoard(board.getBoardState());
+    }
+
 
 }
