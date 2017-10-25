@@ -34,6 +34,7 @@ public class BoardView {
             }
             if(row<2) System.out.println("\n------------");
         }
+        System.out.println();
 
     }
 
@@ -83,6 +84,8 @@ public class BoardView {
         if (token.equals(boardState[0][2]+boardState[1][1]+boardState[2][0])){
             return true;
         }
+
+
 
         return false;
     }

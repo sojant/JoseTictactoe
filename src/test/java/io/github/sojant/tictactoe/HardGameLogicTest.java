@@ -5,11 +5,14 @@ import io.github.sojant.tictactoe.model.Point;
 import io.github.sojant.tictactoe.util.StringBoardParser;
 import io.github.sojant.tictactoe.view.BoardView;
 import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by Sojant on 2017-10-24.
  */
 public class HardGameLogicTest {
+
+
 
     @org.junit.Test
     //** Validates that the Next is a Winner state, also the retorning Point, must match with the empty Space found.
@@ -46,4 +49,80 @@ public class HardGameLogicTest {
 
     }
 
+    @Test
+    public void testNextForkMove(){
+
+        String [][]boardState;
+        Point p;
+
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "| O |"+
+                "| XO|"+
+                "|XO |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        state = "| O |"+
+                "|OXO|"+
+                "|  X|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        state = "| OX|"+
+                "|O O|"+
+                "| OX|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        state = "|  X|"+
+                "|OXO|"+
+                "| O |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        //Arrowhead 1
+        state = "| X |"+
+                "|XOO|"+
+                "| OO|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        //Arrowhead 1 Rotated 45
+        state = "| X |"+
+                "|XOO|"+
+                "| OO|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        //Arrowhead 1 Rotated 180
+        state = "|OO |"+
+                "|OOX|"+
+                "| X |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        //Encirclement 1
+        state = "|  X|"+
+                "|  O|"+
+                "|XOO|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextForkMove("X", boardState);
+        Assert.assertNotNull(p);
+
+
+
+
+
+    }
+
 }
+
