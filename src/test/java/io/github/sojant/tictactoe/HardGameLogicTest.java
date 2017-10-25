@@ -195,5 +195,26 @@ public class HardGameLogicTest {
 
 
     }
+
+    @Test
+    public void testCenterMove(){
+
+        String [][]boardState;
+        Point p;
+
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "|XXX|"+
+                "|X X|"+
+                "|XXX|";
+
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForCenterMove("X", boardState);
+        Assert.assertNotNull(p);
+
+        Assert.assertTrue(p.row==1 && p.col ==1);
+
+    }
 }
 

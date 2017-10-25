@@ -62,12 +62,28 @@ public class HardGameLogic implements GameLogic{
             return nextMove;
         }
 
+        nextMove = checkForCenterMove(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose CENTER");
+            return nextMove;
+        }
+
+
         nextMove = easyGameLogic.makeNextMove(board);
         LOG.info("HardGameLogic defaulted to next open space");
 
 
         return nextMove;
 
+    }
+
+    public  Point checkForCenterMove(String mark, String[][] boardState) {
+
+        if(" ".equals(boardState[1][1])){
+            return new Point(1,1);
+        }
+        else
+            return null;
     }
 
     public Point checkForNextForkBlock(String mark, String[][] boardState) {
