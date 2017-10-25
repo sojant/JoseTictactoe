@@ -76,7 +76,11 @@ public class GameController {
             board.makeMove("X",p);
         }else{
             Point p = gameLogic.makeNextMove(board);
-            if(!board.isEmptySpace(p)) throw new IllegalStateException("Illegal Move from Machine");
+            if(!board.isEmptySpace(p)){
+                LOG.error("Illegal Move from Machine "+p);
+                board.printBoardOnScreen();
+                throw new IllegalStateException("Illegal Move from Machine");
+            }
             board.makeMove("O",p);
         }
 

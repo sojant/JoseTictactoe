@@ -261,6 +261,116 @@ public class HardGameLogicTest {
         Assert.assertTrue(p.row==0 && p.col ==2);
 
     }
+
+    @Test
+    public void testNextEmptyCorner(){
+
+        String [][]boardState;
+        Point p;
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "|   |"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptyCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==0 && p.col ==0);
+
+        state =
+                "|O  |"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptyCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==0 && p.col ==2);
+
+        state =
+                "|O O|"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptyCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col ==2);
+
+
+        state =
+                "|O O|"+
+                "|   |"+
+                "|  O|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptyCorner("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col ==0);
+
+        state =
+                "|O O|"+
+                "|   |"+
+                "|O O|";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptyCorner("X", boardState);
+        Assert.assertNull(p);
+
+
+    }
+
+    @Test
+    public void testNextEmptySide(){
+
+        String [][]boardState;
+        Point p;
+        HardGameLogic gameLogic = new HardGameLogic("X");
+
+        String state =
+                "|   |"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptySide("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==0 && p.col ==1);
+
+        state =
+                "| O |"+
+                "|   |"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptySide("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==1 && p.col ==2);
+
+        state =
+                "| O |"+
+                "|  O|"+
+                "|   |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptySide("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==2 && p.col ==1);
+
+
+        state =
+                "| O |"+
+                "|  O|"+
+                "| O |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptySide("X", boardState);
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.row==1 && p.col ==0);
+
+        state =
+                "| O |"+
+                "|O O|"+
+                "| O |";
+        boardState = StringBoardParser.parseString(state);
+        p = gameLogic.checkForNextEmptySide("X", boardState);
+        Assert.assertNull(p);
+
+
+    }
 }
 
 

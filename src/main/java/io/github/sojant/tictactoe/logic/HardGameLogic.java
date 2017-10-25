@@ -1,6 +1,7 @@
 package io.github.sojant.tictactoe.logic;
 
 import io.github.sojant.tictactoe.model.Point;
+import io.github.sojant.tictactoe.util.BoardCloner;
 import io.github.sojant.tictactoe.util.BoardRotation;
 import io.github.sojant.tictactoe.util.StringBoardParser;
 import io.github.sojant.tictactoe.view.BoardView;
@@ -74,13 +75,58 @@ public class HardGameLogic implements GameLogic{
             return nextMove;
         }
 
+        nextMove = checkForNextEmptyCorner(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose EMPTY CORNER");
+            return nextMove;
+        }
 
-        nextMove = easyGameLogic.makeNextMove(board);
-        LOG.info("HardGameLogic defaulted to next open space");
+        nextMove = checkForNextEmptySide(mark,boardState);
+        if (nextMove!=null){
+            LOG.info("HardGameLogic chose EMPTY SIDE");
+            return nextMove;
+        }
 
+        if(nextMove==null){
+            nextMove = easyGameLogic.makeNextMove(board);
+            LOG.info("HardGameLogic defaulted to next open space");
+        }
 
         return nextMove;
 
+    }
+
+    public Point checkForNextEmptySide(String mark, String[][] boardState) {
+
+        String oppositeCornerState =
+                "| T |"+
+                "|   |"+
+                "|   |";
+
+        BoardConditionState condition = new BoardConditionState();
+        condition.setTargetPointAvailable(1);
+
+        Point nextMove = checkForkStateAndRotate(mark,boardState,oppositeCornerState,condition);
+        if(nextMove!=null) return nextMove;
+
+        return null;
+
+    }
+
+    public Point checkForNextEmptyCorner(String mark, String[][] boardState) {
+
+        String oppositeCornerState =
+                "|T  |"+
+                "|   |"+
+                "|   |";
+
+        BoardConditionState condition = new BoardConditionState();
+        condition.setTargetPointAvailable(1);
+
+        Point nextMove = checkForkStateAndRotate(mark,boardState,oppositeCornerState,condition);
+        if(nextMove!=null) return nextMove;
+
+        return null;
     }
 
     public Point checkForNextOppositeCorner(String mark, String[][] boardState) {
@@ -117,6 +163,8 @@ public class HardGameLogic implements GameLogic{
 
             Map<String, List<Point>> preWinMap = checkForNextPreWinMove(mark, boardState);
 
+            String[][] futureBoardState = BoardCloner.cloneBoardState(boardState);
+
             if(preWinMap!=null){
 
                 for(String key : preWinMap.keySet()){
@@ -125,7 +173,7 @@ public class HardGameLogic implements GameLogic{
 
                         // Simulates the next move, to verify there won't be an opponent Fork
                         BoardView futureBoard = new BoardView();
-                        futureBoard.setBoardState(boardState);
+                        futureBoard.setBoardState(futureBoardState);
                         futureBoard.makeMove(mark,p);
 
                         Point opponentPossibleFork = checkForNextForkMove(getOponentMark(mark), futureBoard.getBoardState());
@@ -525,7 +573,6 @@ public class HardGameLogic implements GameLogic{
             return null;
 
     }
-
 
     public String getOponentMark(String playerMark){
         playerMark = playerMark.toUpperCase();
