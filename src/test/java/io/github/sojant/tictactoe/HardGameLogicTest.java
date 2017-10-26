@@ -23,7 +23,7 @@ public class HardGameLogicTest {
         String [][]boardState;
         Point p;
 
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         //Check for Col X Win
 
@@ -80,7 +80,7 @@ public class HardGameLogicTest {
         String [][]boardState;
         Point p;
 
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "| O |"+
@@ -154,7 +154,7 @@ public class HardGameLogicTest {
 
         String [][]boardState;
 
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "|  X|"+
@@ -181,7 +181,7 @@ public class HardGameLogicTest {
         String [][]boardState;
         Point p;
 
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "| O |"+
@@ -201,7 +201,7 @@ public class HardGameLogicTest {
         String [][]boardState;
         Point p;
 
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "|XXX|"+
@@ -221,7 +221,7 @@ public class HardGameLogicTest {
 
         String [][]boardState;
         Point p;
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "|O  |"+
@@ -267,7 +267,7 @@ public class HardGameLogicTest {
 
         String [][]boardState;
         Point p;
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "|   |"+
@@ -322,7 +322,7 @@ public class HardGameLogicTest {
 
         String [][]boardState;
         Point p;
-        HardGameLogic gameLogic = new HardGameLogic("X");
+        HardGameLogic gameLogic = new HardGameLogic();
 
         String state =
                 "|   |"+

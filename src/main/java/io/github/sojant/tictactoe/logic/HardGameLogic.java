@@ -20,20 +20,13 @@ public class HardGameLogic implements GameLogic{
 
     Logger LOG = LogManager.getLogger(HardGameLogic.class);
 
-    String mark;
-    private enum GameState{WIN,BLOCK,FORK,BLOCKFORK,CENTER,OPPOSITE_CORNER,EMPTY_CORNER,EMPTY_SIDE}
+    //String mark;
 
-    public HardGameLogic(String mark){
-        this.mark=mark;
+    public HardGameLogic(){
+        //this.mark=mark;
     }
 
-    public Point makeNextMove(BoardView board) {
-
-        return findGameState(board);
-
-    }
-
-    private Point findGameState(BoardView board) {
+    public Point makeNextMove(BoardView board, String mark) {
 
         String[][] boardState = board.getBoardState();
         EasyGameLogic easyGameLogic = new EasyGameLogic();
@@ -88,13 +81,15 @@ public class HardGameLogic implements GameLogic{
         }
 
         if(nextMove==null){
-            nextMove = easyGameLogic.makeNextMove(board);
+            nextMove = easyGameLogic.makeNextMove(board,mark);
             LOG.info("HardGameLogic defaulted to next open space");
         }
 
         return nextMove;
 
     }
+
+
 
     public Point checkForNextEmptySide(String mark, String[][] boardState) {
 

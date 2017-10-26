@@ -8,6 +8,6 @@ import io.github.sojant.tictactoe.view.BoardView;
  */
 public interface GameLogic {
 
-    public Point makeNextMove(BoardView  board);
+    public Point makeNextMove(BoardView  board, String mark);
 
 }

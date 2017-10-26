@@ -1,7 +1,9 @@
 package io.github.sojant.tictactoe.controller;
 
 import io.github.sojant.tictactoe.logic.GameLogic;
+import io.github.sojant.tictactoe.logic.HumanGameLogic;
 import io.github.sojant.tictactoe.logic.KeyboardMapper;
+import io.github.sojant.tictactoe.model.Player;
 import io.github.sojant.tictactoe.model.Point;
 import io.github.sojant.tictactoe.view.BoardView;
 import org.apache.logging.log4j.LogManager;
@@ -25,93 +27,65 @@ public class GameController {
 
     private String playerName;
     private String opponentName;
-    private String difficulty;
-    private GameLogic gameLogic;
+    //private String difficulty;
+    //private GameLogic gameLogic;
+    private GameLogic gameLogicX = new HumanGameLogic();
+    private Player xPlayer;
+    private Player oPlayer;
+    private Player currentPlayer;
 
-    public GameController(BoardView board, GameLogic logic){
+    private Player winner;
+
+    public boolean isPrintOnScreen() {
+        return printOnScreen;
+    }
+
+    public void setPrintOnScreen(boolean printOnScreen) {
+        this.printOnScreen = printOnScreen;
+    }
+
+    boolean printOnScreen=true;
+
+    public GameController(BoardView board){
         this.board=board;
-        this.gameLogic=logic;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public String getOpponentName() {
-        return opponentName;
-    }
-
-    public void setOpponentName(String opponentName) {
-        this.opponentName = opponentName;
-    }
-
-    public String getCurrentPlayer(){
-        return  xTurn ? playerName : opponentName;
-    }
-
-    public String getCurrentMark(){
-        return  xTurn ? "X": "O";
     }
 
 
     public void printNextMoveInfo(){
-        System.out.print((String.format("\n%s's Turn (%s):",getCurrentPlayer(),getCurrentMark())));
+        System.out.print((String.format("\n%s's Turn (%s):",currentPlayer.getName(),currentPlayer.getMark())));
     }
 
     public void announceNextMove(){
-        System.out.println("\n\n\n------------------------------------");
-        board.printBoardOnScreen();
+        System.out.println("\n------------------------------------");
+        if(printOnScreen){
+            board.printBoardOnScreen();
+        }
         printNextMoveInfo();
     }
 
     public void getNextMove(){
-        if(xTurn){
-            String nextPlayerMove = in.nextLine();
-            Point p = keyboardMapper.getPointFromKeyboard(nextPlayerMove);
-            if(!board.isEmptySpace(p)) LOG.warn("Illegal Move!!");
-            board.makeMove("X",p);
-        }else{
-            Point p = gameLogic.makeNextMove(board);
-            if(!board.isEmptySpace(p)){
-                LOG.error("Illegal Move from Machine "+p);
-                board.printBoardOnScreen();
-                throw new IllegalStateException("Illegal Move from Machine");
-            }
-            board.makeMove("O",p);
-        }
+
+        Point p = currentPlayer.getGameLogic().makeNextMove(board, currentPlayer.getMark());
+
+        if(!board.isEmptySpace(p)){throw new IllegalArgumentException("Illegal Move.");}
+        board.makeMove(currentPlayer.getMark(),p);
 
     }
 
     public void startGame(){
-
+        currentPlayer=xPlayer;
         do{
             announceNextMove();
             getNextMove();
         } while(!checkFinalGameStatus());
-
-
-
-//        for (int i = 0; i < 20; i++) {
-//            announceNextMove();
-//            getNextMove();
-//            boolean finalStatus = checkFinalGameStatus();
-//
-//            if(finalStatus) break;
-//
-//            xTurn=!xTurn;
-//        }
-
     }
 
     public boolean checkFinalGameStatus(){
         if(board.checkForWinner(xTurn?"X":"O")){
             System.out.println("\n\n\n------------------------------------");
-            LOG.info("\nWinner is "+ getCurrentPlayer()+"!!");
+            LOG.info("\n"+currentPlayer.getName()+" is the Winner!!");
             board.printBoardOnScreen();
+            winner = currentPlayer;
             return true;
         } else if(board.isFull()){
             System.out.println("\n\n\n------------------------------------");
@@ -122,8 +96,22 @@ public class GameController {
 
         //Change player turn
         xTurn=!xTurn;
+        currentPlayer = xTurn ? xPlayer:oPlayer;
         return false;
     }
 
 
+    public void setXPlayer(Player xPlayer) {
+        xPlayer.setMark("X");
+        this.xPlayer = xPlayer;
+    }
+
+    public void setOPlayer(Player oPlayer) {
+        oPlayer.setMark("O");
+        this.oPlayer = oPlayer;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
 }

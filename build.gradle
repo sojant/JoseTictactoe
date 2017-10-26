@@ -2,6 +2,9 @@ group 'io.github.sojant'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "io.github.sojant.tictactoe.main.Main"
 
 sourceCompatibility = 1.5
 

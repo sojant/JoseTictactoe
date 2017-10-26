@@ -8,7 +8,7 @@ import io.github.sojant.tictactoe.view.BoardView;
  */
 public class EasyGameLogic implements GameLogic {
 
-    public Point makeNextMove(BoardView board) {
+    public Point makeNextMove(BoardView board, String mark) {
 
         String[][] boardPositions = board.getBoardState();
         Point p = findNextEmpySpace(boardPositions);
